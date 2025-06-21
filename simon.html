@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon Says Game</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(2, 150px);
+            grid-template-rows: repeat(2, 150px);
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .color-button {
+            width: 150px;
+            height: 150px;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simon Says Game</h1>
+    <div class="game-board" id="game-board">
+        <button class="color-button" id="red" style="background-color: red;"></button>
+        <button class="color-button" id="blue" style="background-color: blue;"></button>
+        <button class="color-button" id="yellow" style="background-color: yellow;"></button>
+        <button class="color-button" id="green" style="background-color: green;"></button>
+    </div>
+    <p id="status">Press Start to Play</p>
+    <button onclick="startGame()">Start</button>
+    
+    <script>
+        let sequence = [];
+        let playerSequence = [];
+        let colors = ["red", "blue", "yellow", "green"];
+        let turn = 0;
+
+        function startGame() {
+            sequence = [];
+            playerSequence = [];
+            turn = 0;
+            nextRound();
+        }
+
+        function nextRound() {
+            playerSequence = [];
+            sequence.push(colors[Math.floor(Math.random() * 4)]);
+            flashSequence();
+        }
+
+        function flashSequence() {
+            let i = 0;
+            const interval = setInterval(() => {
+                flashColor(sequence[i]);
+                i++;
+                if (i >= sequence.length) clearInterval(interval);
+            }, 1000);
+        }
+
+        function flashColor(color) {
+            const button = document.getElementById(color);
+            button.style.opacity = "0.5";
+            setTimeout(() => button.style.opacity = "1", 500);
+        }
+
+        document.querySelectorAll(".color-button").forEach(button => {
+            button.addEventListener("click", (event) => {
+                const color = event.target.id;
+                playerSequence.push(color);
+                flashColor(color);
+                checkSequence();
+            });
+        });
+
+        function checkSequence() {
+            if (playerSequence[turn] !== sequence[turn]) {
+                document.getElementById("status").textContent = "Game Over! Press Start to Play Again.";
+                return;
+            }
+            turn++;
+            if (turn === sequence.length) {
+                document.getElementById("status").textContent = "Good job! Next round starting...";
+                setTimeout(nextRound, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
